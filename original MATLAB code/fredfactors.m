@@ -42,7 +42,7 @@ clc
 % PARAMETERS TO BE CHANGED
 
 % File name of desired FRED-MD vintage
-csv_in='2015-04.csv';
+csv_in='..\2019-09.csv';
 
 % Type of transformation performed on each series before factors are
 % estimated
