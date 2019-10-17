@@ -110,6 +110,9 @@ dates=dates(3:T,:);
 %   n = number of outliers removed from each series
 [data,n]=remove_outliers(yt);
 
+ind_var = 10 ;
+figure; plot(data(:,ind_var)); title(series{ind_var});
+
 % =========================================================================
 % PART 3: ESTIMATE FACTORS AND COMPUTE R-SQUARED 
 

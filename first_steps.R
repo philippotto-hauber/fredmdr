@@ -64,3 +64,10 @@ z <- abs(data1_trafo-median_data);
 outlier <- z > (10 * iqr_data)
 data1_trafo_xoutl[outlier == TRUE] <- NA
 n_outl <- apply(outlier, 2, sum, na.rm = TRUE)
+
+# convert transformed and outlier-free data set to ts format
+data1_trafo_xoutl_ts <- ts(data1_trafo_xoutl, c(1959,1), frequency = 12)
+
+# plot series to compare with MATLAB
+ind_var <- 10
+plot(data1_trafo_xoutl_ts[, ind_var], type = "l", main = names(data1_trafo_xoutl)[ind_var], ylab = "", xlab = "")
