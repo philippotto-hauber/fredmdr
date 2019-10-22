@@ -55,7 +55,7 @@ for (i in 1:Nn) {
 data1_trafo <- as.data.frame(data1_trafo)
 rownames(data1_trafo) <- rownames(data1)
 names(data1_trafo) <- names(data1)
-data1_trafo <- data1_trafo[3 : Nt, ]
+#data1_trafo <- data1_trafo[3 : Nt, ]
 
 # remove outliers
 data1_trafo_xoutl <- data1_trafo
@@ -77,5 +77,43 @@ plot(data1_trafo_xoutl_ts[, ind_var], type = "l", main = names(data1_trafo_xoutl
 data1_trafo_xoutl <- cbind(rownames(data1_trafo_xoutl), data.frame(data1_trafo_xoutl, row.names=NULL))
 names(data1_trafo_xoutl)[1] <- "dates"
 library(tidyr)
-data_fredmd <- gather(data1_trafo_xoutl, key = variable, value = value, -dates)
+data_fredmd_trafo <- gather(data1_trafo_xoutl, key = var, value = trafo, -dates)
 
+# do the same for the raw data
+data1 <- cbind(rownames(data1), data.frame(data1, row.names=NULL))
+names(data1)[1] <- "dates"
+data_fredmd_raw <- gather(data1, key = var, value = raw, -dates) 
+
+# merge both raw and transformed series into one dataset
+data_fredmd <- merge(data_fredmd_raw, data_fredmd_trafo, by = c("dates", "var"))
+
+# convert dates column to date format
+data_fredmd$dates <- as.Date(data_fredmd$dates)
+
+# plot both series
+library(dplyr)
+library(ggplot2)
+p1 <- ggplot(filter(data_fredmd, var == "RPI"))+
+  geom_line(aes(x = dates, y = raw, group = var))+
+  labs(title = "raw",
+       x ="", y = "level")
+p2 <- ggplot(filter(data_fredmd, var == "RPI"))+
+  geom_line(aes(x = dates, y = 100*trafo, group = var))+
+  labs(title = "transformed",
+       x ="", y = "%")
+
+library(gridExtra)
+grid.arrange(p1,p2,nrow = 2)
+
+library(cowplot)
+plot_grid(p1, p2, nrow = 2)
+
+temp <- filter(data_fredmd, var == "RPI")
+temp2 <- gather(temp, key = rawtrafo, value = value, -c(dates, var))
+
+ggplot(temp2, aes(x = dates, y = value, group = var))+
+  geom_line() + 
+  facet_wrap(~rawtrafo, nrow = 2, scale = "free_y")+
+  labs(title = "RPI",
+       x ="", y = "")+
+  theme_minimal()
