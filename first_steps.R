@@ -7,6 +7,7 @@ rm(list = ls())
 
 # set working directory
 setwd("C:/Users/Philipp/Documents/GitHub/fredmdr")
+setwd("C:/Users/Hauber/Desktop/fredmdr")
 
 # load in data
 data <- read.csv("2019-09.csv")
@@ -71,3 +72,10 @@ data1_trafo_xoutl_ts <- ts(data1_trafo_xoutl, c(1959,1), frequency = 12)
 # plot series to compare with MATLAB
 ind_var <- 10
 plot(data1_trafo_xoutl_ts[, ind_var], type = "l", main = names(data1_trafo_xoutl)[ind_var], ylab = "", xlab = "")
+
+# re-insert date column and gather 
+data1_trafo_xoutl <- cbind(rownames(data1_trafo_xoutl), data.frame(data1_trafo_xoutl, row.names=NULL))
+names(data1_trafo_xoutl)[1] <- "dates"
+library(tidyr)
+data_fredmd <- gather(data1_trafo_xoutl, key = variable, value = value, -dates)
+
