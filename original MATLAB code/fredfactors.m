@@ -113,6 +113,8 @@ dates=dates(3:T,:);
 ind_var = 10 ;
 figure; plot(data(:,ind_var)); title(series{ind_var});
 
+csvwrite('dataMATLAB.csv',data)
+
 % =========================================================================
 % PART 3: ESTIMATE FACTORS AND COMPUTE R-SQUARED 
 
