@@ -73,8 +73,28 @@ data1_trafo_xoutl_ts <- ts(data1_trafo_xoutl, c(1959,1), frequency = 12)
 ind_var <- 10
 plot(data1_trafo_xoutl_ts[, ind_var], type = "l", main = names(data1_trafo_xoutl)[ind_var], ylab = "", xlab = "")
 
+
+# standardize series
+f_standardize <- function(x, demean = TRUE, unitvar = TRUE) {
+  # standardizes Nt x Nn matrix x
+  Nt <- dim(x)[1] ; Nn <- dim(x)[2] ; xstand <- x
+  
+  if (demean == TRUE & unitvar == TRUE) {
+    xstand <- xstand - matrix(apply(xstand, 2, mean, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+    xstand <- xstand / matrix(apply(xstand, 2, sd, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+  } else if (demean == TRUE & unitvar == FALSE) {
+    xstand <- xstand - matrix(apply(xstand, 2, mean, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+  } else if (unitvar == TRUE & demean == FALSE) {
+    xstand <- xstand / matrix(apply(xstand, 2, sd, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+  }
+  return(xstand)
+}
+
+data1_trafo_xoutl_standardized <- f_standardize(data1_trafo_xoutl)
+
+
 # re-insert date column and gather 
-data1_trafo_xoutl <- cbind(rownames(data1_trafo_xoutl), data.frame(data1_trafo_xoutl, row.names=NULL))
+data1_trafo_xoutl <- cbind(rownames(data1_trafo_xoutl_standardized), data.frame(data1_trafo_xoutl_standardized, row.names=NULL))
 names(data1_trafo_xoutl)[1] <- "dates"
 library(tidyr)
 data_fredmd_trafo <- gather(data1_trafo_xoutl, key = var, value = trafo, -dates)
