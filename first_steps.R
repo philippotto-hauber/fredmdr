@@ -96,14 +96,29 @@ rownames(data1_trafo) <- rownames(data1)
 names(data1_trafo) <- names(data1)
 #data1_trafo <- data1_trafo[3 : Nt, ]
 
-# remove outliers
-data1_trafo_xoutl <- data1_trafo
-median_data <- matrix(apply(data1_trafo, 2, median, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
-iqr_data <- matrix(apply(data1_trafo, 2, quantile, probs = c(0.75), na.rm = TRUE) - apply(data1_trafo, 2, quantile, probs = c(0.25), na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
-z <- abs(data1_trafo-median_data);
-outlier <- z > (10 * iqr_data)
-data1_trafo_xoutl[outlier == TRUE] <- NA
-n_outl <- apply(outlier, 2, sum, na.rm = TRUE)
+# # remove outliers
+# data1_trafo_xoutl <- data1_trafo
+# median_data <- matrix(apply(data1_trafo, 2, median, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+# iqr_data <- matrix(apply(data1_trafo, 2, quantile, probs = c(0.75), na.rm = TRUE) - apply(data1_trafo, 2, quantile, probs = c(0.25), na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+# z <- abs(data1_trafo-median_data);
+# outlier <- z > (10 * iqr_data)
+# data1_trafo_xoutl[outlier == TRUE] <- NA
+# n_outl <- apply(outlier, 2, sum, na.rm = TRUE)
+
+# function to remove outliers
+f_removeoutl <- function(x){
+  Nt <- dim(x)[1] ; Nn <- dim(x)[2]
+  xoutl <- x
+  medx <- matrix(apply(x, 2, median, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+  iqrx <- matrix(apply(x, 2, quantile, probs = c(0.75), na.rm = TRUE) - apply(data1_trafo, 2, quantile, probs = c(0.25), na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+  z <- abs(x-medx);
+  outlier <- z > (10 * iqrx)
+  xoutl[outlier == TRUE] <- NA
+  n_outl <- apply(outlier, 2, sum, na.rm = TRUE)
+  return(list(xoutl = xoutl, n_outl = n_outl))
+}
+
+data1_trafo_xoutl <- f_removeoutl(data1_trafo)
 
 # convert transformed and outlier-free data set to ts format
 data1_trafo_xoutl_ts <- ts(data1_trafo_xoutl, c(1959,1), frequency = 12)
