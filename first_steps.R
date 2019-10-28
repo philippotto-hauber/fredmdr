@@ -132,16 +132,17 @@ plot(data1_trafo_xoutl_ts[, ind_var], type = "l", main = names(data1_trafo_xoutl
 f_standardize <- function(x, demean = TRUE, unitvar = TRUE) {
   # standardizes Nt x Nn matrix x
   Nt <- dim(x)[1] ; Nn <- dim(x)[2] ; xstand <- x
-  
+  meanx <- matrix(apply(xstand, 2, mean, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+  sdx <- matrix(apply(xstand, 2, sd, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
   if (demean == TRUE & unitvar == TRUE) {
-    xstand <- xstand - matrix(apply(xstand, 2, mean, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
-    xstand <- xstand / matrix(apply(xstand, 2, sd, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+    xstand <- xstand - meanx
+    xstand <- xstand / sdx
   } else if (demean == TRUE & unitvar == FALSE) {
-    xstand <- xstand - matrix(apply(xstand, 2, mean, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+    xstand <- xstand - meanx
   } else if (unitvar == TRUE & demean == FALSE) {
-    xstand <- xstand / matrix(apply(xstand, 2, sd, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+    xstand <- xstand / sdx
   }
-  return(xstand)
+  return(list(xstand = xstand, meanx = meanx, sdx = sdx))
 }
 
 data1_trafo_xoutl_standardized <- f_standardize(data1_trafo_xoutl)
