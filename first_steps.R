@@ -31,25 +31,64 @@ trafos <- trafos[, -1]
 # data1_gathered <- gather(data1, mnemonic, value)
 
 # transform
-Nt <- dim(data)[1]
-Nn <- dim(data1)[2]
-data1_trafo <- matrix(NA_real_, Nt, Nn)
-for (i in 1:Nn) {
-  if (trafos[i] == 1) # no transformation
-    data1_trafo[, i] <- data1[, i]
-  else if (trafos[i] == 2) # first difference
-    data1_trafo[ 2 : Nt, i] <- diff(data1[, i])
-  else if (trafos[i] == 3) # second difference
-    data1_trafo[ 3 : Nt, i] <- diff(data1[, i], differences = 2)
-  else if (trafos[i] == 4) # logs
-    data1_trafo[, i] <- log(data[, i])
-  else if (trafos[i] == 5) # log first differences
-    data1_trafo[ 2 : Nt, i] <- diff(log(data1[, i]))
-  else if (trafos[i] == 6) # log second differenes
-    data1_trafo[ 3 : Nt, i] <- diff(log(data[, i]), differences = 2)
-  else if (trafos[i] == 7) # difference of percentage change
-    data1_trafo[ 3 : Nt, i] <- diff(data1[2 : Nt, i] / data1[1 : (Nt-1), i] - 1)
+
+# Nt <- dim(data)[1]
+# Nn <- dim(data1)[2]
+# data1_trafo <- matrix(NA_real_, Nt, Nn)
+# for (i in 1:Nn) {
+#   if (trafos[i] == 1) # no transformation
+#     data1_trafo[, i] <- data1[, i]
+#   else if (trafos[i] == 2) # first difference
+#     data1_trafo[ 2 : Nt, i] <- diff(data1[, i])
+#   else if (trafos[i] == 3) # second difference
+#     data1_trafo[ 3 : Nt, i] <- diff(data1[, i], differences = 2)
+#   else if (trafos[i] == 4) # logs
+#     data1_trafo[, i] <- log(data[, i])
+#   else if (trafos[i] == 5) # log first differences
+#     data1_trafo[ 2 : Nt, i] <- diff(log(data1[, i]))
+#   else if (trafos[i] == 6) # log second differenes
+#     data1_trafo[ 3 : Nt, i] <- diff(log(data[, i]), differences = 2)
+#   else if (trafos[i] == 7) # difference of percentage change
+#     data1_trafo[ 3 : Nt, i] <- diff(data1[2 : Nt, i] / data1[1 : (Nt-1), i] - 1)
+# }
+
+# function to transform data
+f_transform <- function(x, trafos){
+  
+  # back out dimensions
+  Nt <- dim(x)[1] ;  Nn <- dim(x)[2]
+  # check that number of columns equals length of trafos
+  if (Nn != length(trafos)){
+    print("dimensions of x and trafos does not match. Abort!")
+    break
+  }
+  
+  # output matrix (carrying over row and col names)
+  xtrafo <- matrix(NA_real_, Nt, Nn)
+  rownames(xtrafo) <- rownames(x) ;  names(xtrafo) <- names(x)
+  
+  # loop over Nn
+  for (i in 1:Nn) {
+    if (trafos[i] == 1) # no transformation
+      xtrafo[, i] <- x[, i]
+    else if (trafos[i] == 2) # first difference
+      xtrafo[ 2 : Nt, i] <- diff(x[, i])
+    else if (trafos[i] == 3) # second difference
+      xtrafo[ 3 : Nt, i] <- diff(x[, i], differences = 2)
+    else if (trafos[i] == 4) # logs
+      xtrafo[, i] <- log(x[, i])
+    else if (trafos[i] == 5) # log first differences
+      xtrafo[ 2 : Nt, i] <- diff(log(x[, i]))
+    else if (trafos[i] == 6) # log second differenes
+      xtrafo[ 3 : Nt, i] <- diff(log(x[, i]), differences = 2)
+    else if (trafos[i] == 7) # difference of percentage change
+      xtrafo[ 3 : Nt, i] <- diff(x[2 : Nt, i] / x[1 : (Nt-1), i] - 1)
+  } 
+  
+  return(xtrafo)
 }
+
+data1_trafo <- f_transform(data1[setdiff(names(data1), "dates")], trafos)
 
 # convert to data frame and remove first two rows
 data1_trafo <- as.data.frame(data1_trafo)
