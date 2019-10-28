@@ -18,7 +18,7 @@ data <- data[2 : dim(data)[1], ]
 
 # convert first column to date format
 data1 <- data
-rownames(data1) <- seq(as.Date("1959/01/01"), by = "months", length.out = dim(data1)[1])
+rownames(data1) <- seq(as.Date("1959-01-01"), by = "months", length.out = dim(data1)[1])
 data1 <- data1[, -1]
 trafos <- trafos[, -1]
 
