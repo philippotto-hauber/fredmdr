@@ -162,44 +162,44 @@ plot(diffRMATLAB,
 
 Virtually no differences in the log difference of non-farm employment!
 
-## Standardize series
+## Standardize series (commented out!)
 
 Function with default arguments such that mean is set to 0 and standard deviation to 1
 
 ```{r}
-f_standardize <- function(x, demean = TRUE, unitsd = TRUE) {
-  ########################################################    
-  # standardizes Nt x Nn matrix x (NA are allowed) #######
-  ########################################################  
-  Nt <- dim(x)[1] ; Nn <- dim(x)[2] ; xstand <- x
-  
-  # claculate mean and sd of columns of x
-  meanx <- matrix(apply(xstand, 2, mean, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
-  sdx <- matrix(apply(xstand, 2, sd, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
-  if (demean == TRUE & unitsd == TRUE) {
-    xstand <- xstand - meanx
-    xstand <- xstand / sdx
-  } else if (demean == TRUE & unitsd == FALSE) {
-    xstand <- xstand - meanx
-  } else if (unitvar == TRUE & demean == FALSE) {
-    xstand <- xstand / sdx
-  }
-  return(list(xstand = xstand, meanx = meanx[1, ], sdx = sdx[1, ]))
-}
+# f_standardize <- function(x, demean = TRUE, unitsd = TRUE) {
+#   ########################################################    
+#   # standardizes Nt x Nn matrix x (NA are allowed) #######
+#   ########################################################  
+#   Nt <- dim(x)[1] ; Nn <- dim(x)[2] ; xstand <- x
+#   
+#   # claculate mean and sd of columns of x
+#   meanx <- matrix(apply(xstand, 2, mean, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+#   sdx <- matrix(apply(xstand, 2, sd, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+#   if (demean == TRUE & unitsd == TRUE) {
+#     xstand <- xstand - meanx
+#     xstand <- xstand / sdx
+#   } else if (demean == TRUE & unitsd == FALSE) {
+#     xstand <- xstand - meanx
+#   } else if (unitvar == TRUE & demean == FALSE) {
+#     xstand <- xstand / sdx
+#   }
+#   return(list(xstand = xstand, meanx = meanx[1, ], sdx = sdx[1, ]))
+# }
 ```
 
 Call **f_standardize** and unlist results
 
 ```{r}
-temp <- f_standardize(xmat)
-
-# unlist
-xmat <- temp[["xstand"]]
-meanx <- temp[["meanx"]]
-names(meanx) <- names(xmat)
-sdx <- temp[["sdx"]]
-names(sdx) <- names(xmat)
-rm(temp)
+# temp <- f_standardize(xmat)
+# 
+# # unlist
+# xmat <- temp[["xstand"]]
+# meanx <- temp[["meanx"]]
+# names(meanx) <- names(xmat)
+# sdx <- temp[["sdx"]]
+# names(sdx) <- names(xmat)
+# rm(temp)
 ```
 
 ## Re-insert dates as column and tidy up
