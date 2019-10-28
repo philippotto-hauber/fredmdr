@@ -1,0 +1,220 @@
+---
+title: "fredmr - loading and transforming FRED-MD"
+author: "Philipp Hauber"
+date: "28 10 2019"
+output: html_document
+---
+
+## Load csv file
+
+```{r}
+# clear workspace
+rm(list = ls())
+
+# set working directory
+#setwd("C:/Users/Philipp/Documents/GitHub/fredmdr")
+setwd("C:/Users/Hauber/Desktop/fredmdr")
+
+# load in data
+temp <- read.csv("2019-09.csv")
+```
+
+## Extract series, transformations, names and dates
+
+```{r}
+# extract trafos
+trafos <- temp[1, 2 : dim(temp)[2]]
+xmat <- temp[2 : dim(temp)[1], 2 : dim(temp)[2]]
+
+# convert first column to date format and move to rownames
+rownames(xmat) <- seq(as.Date("1959-01-01"), by = "months", length.out = dim(xmat)[1])
+
+# remove temp
+rm(temp)
+```
+
+Variable names are stored as column names of xmat
+
+## Transform series
+
+First, define a function that transforms the series according to its code: 
+
+```{r}
+f_transform <- function(x, trafos){
+  
+  # back out dimensions
+  Nt <- dim(x)[1] ;  Nn <- dim(x)[2]
+  # check that number of columns equals length of trafos
+  if (Nn != length(trafos)){
+    print("dimensions of x and trafos do not match. Abort!")
+    break
+  }
+  
+  # output matrix (carrying over row and col names)
+  xtrafo <- x
+  xtrafo[] <- NA
+  
+  # loop over Nn
+  for (i in 1:Nn) {
+    if (trafos[i] == 1) # no transformation
+      xtrafo[, i] <- x[, i]
+    
+    else if (trafos[i] == 2) # first difference
+      xtrafo[ 2 : Nt, i] <- diff(x[, i])
+    
+    else if (trafos[i] == 3) # second difference
+      xtrafo[ 3 : Nt, i] <- diff(x[, i], differences = 2)
+    
+    else if (trafos[i] == 4) # logs
+      xtrafo[, i] <- log(x[, i])
+    
+    else if (trafos[i] == 5) # log first differences
+      xtrafo[ 2 : Nt, i] <- diff(log(x[, i]))
+    
+    else if (trafos[i] == 6) # log second differenes
+      xtrafo[ 3 : Nt, i] <- diff(log(x[, i]), differences = 2)
+    
+    else if (trafos[i] == 7) # difference of percentage change
+      xtrafo[ 3 : Nt, i] <- diff(x[2 : Nt, i] / x[1 : (Nt-1), i] - 1)
+  } 
+  return(xtrafo)
+}
+```
+
+Now, transform columns of **xmat** calling **f_transform**. 
+
+```{r}
+xmat <- f_transform(xmat, trafos)
+```
+
+Remove the first two rows which are mostly NA due to transformations
+
+```{r}
+xmat <- xmat[3 : dim(xmat)[1], ]
+```
+
+## Remove outliers
+
+function
+
+```{r}
+f_removeoutl <- function(x){
+  ########################################################    
+  # removes outliers from Nt x Nn matrix x, 
+  # defined as any observation larger than 10 times 
+  # the interquartile range (in absolute value)
+  ########################################################    
+    
+  # back out dimensions of x    
+  Nt <- dim(x)[1] ; Nn <- dim(x)[2]
+  
+  # initialize xoutl (carrying over row and column names)
+  xoutl <- x
+  
+  # calculate median of columns of x
+  medx <- matrix(apply(x, 2, median, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+  
+  # calculate interquartile range of columns of x
+  iqrx <- matrix(apply(x, 2, quantile, probs = c(0.75), na.rm = TRUE) - 
+                 apply(x, 2, quantile, probs = c(0.25), na.rm = TRUE), 
+                 nrow = Nt, ncol = Nn, byrow = TRUE)
+  
+  # determine outliers
+  z <- abs(x-medx);
+  outlier <- z > (10 * iqrx)
+  
+  # remove and count
+  xoutl[outlier == TRUE] <- NA
+  noutl <- apply(outlier, 2, sum, na.rm = TRUE)
+  
+  # return output
+  return(list(xoutl = xoutl, noutl = noutl))
+}
+```
+
+Call **f_removeoutl** and unlist results
+```{r}
+temp <- f_removeoutl(xmat)
+
+# unlist!
+xmat <- temp[["xoutl"]]
+noutl <- temp[["noutl"]]
+rm(temp)
+```
+
+## Compare with MATLAB
+
+Load series transformed by MATLAB
+
+```{r}
+xmatlab <- read.csv("original MATLAB code/dataMATLAB.csv", header = FALSE)
+```
+
+Plot!
+
+```{r}
+ind_var <- which(names(xmat) == "PAYEMS")
+diffRMATLAB <- xmat[, ind_var] - xmatlab[, ind_var]
+plot(diffRMATLAB, 
+     type = "l", xlab = "", ylab = "", 
+     main = paste0("Difference between MATLAB and R: ", names(xmat)[ind_var]))
+```
+
+Virtually no differences in the log difference of non-farm employment!
+
+## Standardize series
+
+Function with default arguments such that mean is set to 0 and standard deviation to 1
+
+```{r}
+f_standardize <- function(x, demean = TRUE, unitsd = TRUE) {
+  ########################################################    
+  # standardizes Nt x Nn matrix x (NA are allowed) #######
+  ########################################################  
+  Nt <- dim(x)[1] ; Nn <- dim(x)[2] ; xstand <- x
+  
+  # claculate mean and sd of columns of x
+  meanx <- matrix(apply(xstand, 2, mean, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+  sdx <- matrix(apply(xstand, 2, sd, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TRUE)
+  if (demean == TRUE & unitsd == TRUE) {
+    xstand <- xstand - meanx
+    xstand <- xstand / sdx
+  } else if (demean == TRUE & unitsd == FALSE) {
+    xstand <- xstand - meanx
+  } else if (unitvar == TRUE & demean == FALSE) {
+    xstand <- xstand / sdx
+  }
+  return(list(xstand = xstand, meanx = meanx[1, ], sdx = sdx[1, ]))
+}
+```
+
+Call **f_standardize** and unlist results
+
+```{r}
+temp <- f_standardize(xmat)
+
+# unlist
+xmat <- temp[["xstand"]]
+meanx <- temp[["meanx"]]
+names(meanx) <- names(xmat)
+sdx <- temp[["sdx"]]
+names(sdx) <- names(xmat)
+rm(temp)
+```
+
+## Re-insert dates as column and tidy up
+
+```{r}
+xmat <- cbind(rownames(xmat), data.frame(xmat, row.names=NULL))
+names(xmat)[1] <- "dates"
+library(tidyr)
+fredmd <- gather(xmat, key = var, value = value, -dates)
+```
+
+
+## Save data frame
+
+```{r}
+save(fredmd, file = "fredmd201909.Rda")
+```
+
