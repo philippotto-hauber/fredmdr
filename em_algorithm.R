@@ -100,6 +100,23 @@ while (err > 0.000001 & iter < Niter) {
 # plot factors
 plot(f[, 1], type = "l", col = "blue")
 lines(f[, 2], type = "l", col = "red")
+lines(f[, 3], type = "l", col = "green")
+lines(f[, 4], type = "l", col = "black")
 
+# compare with MATLAB factors
+f_MATLAB <- read.csv("original MATLAB code/FhatMATLAB.csv", header = FALSE)
+
+par(mfrow = c(2,2))
+plot(f[, 1], type = "l", col = "blue", xlab = "", ylab = "", main = "factor 1")
+lines(f_MATLAB[, 1], type = "l", col = "red")
+
+plot(f[, 2], type = "l", col = "blue", xlab = "", ylab = "", main = "factor 2")
+lines(f_MATLAB[, 2], type = "l", col = "red")
+
+plot(f[, 3], type = "l", col = "blue", xlab = "", ylab = "", main = "factor 3")
+lines(f_MATLAB[, 3], type = "l", col = "red")
+
+plot(f[, 4], type = "l", col = "blue", xlab = "", ylab = "", main = "factor 4")
+lines(f_MATLAB[, 4], type = "l", col = "red")
 # tidy up factors
 fdf <- data.frame(dates = xdf$dates, f = f)
