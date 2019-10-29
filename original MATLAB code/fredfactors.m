@@ -127,6 +127,8 @@ csvwrite('dataMATLAB.csv',data)
 %   x2      = data with missing values replaced from the EM algorithm
 [ehat,Fhat,lamhat,ve2,x2] = factors_em(data,kmax,jj,DEMEAN);
 
+csvwrite('FhatMATLAB.csv',Fhat)
+
 % Compute R-squared and marginal R-squared from estimated factors and
 % factor loadings using function mrsq()
 %   R2      = R-squared for each series for each factor
