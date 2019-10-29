@@ -104,7 +104,7 @@ lines(f[, 3], type = "l", col = "green")
 lines(f[, 4], type = "l", col = "black")
 
 # compare with MATLAB factors
-f_MATLAB <- read.csv("original MATLAB code/FhatMATLAB.csv", header = FALSE)
+f_MATLAB <- as.matrix(read.csv("original MATLAB code/FhatMATLAB.csv", header = FALSE))
 
 par(mfrow = c(2,2))
 plot(f[, 1], type = "l", col = "blue", xlab = "", ylab = "", main = "factor 1")
@@ -118,5 +118,17 @@ lines(f_MATLAB[, 3], type = "l", col = "red")
 
 plot(f[, 4], type = "l", col = "blue", xlab = "", ylab = "", main = "factor 4")
 lines(f_MATLAB[, 4], type = "l", col = "red")
+
+# trace R2
+Pf <- f_MATLAB %*% solve(t(f_MATLAB) %*% f_MATLAB) %*% t(f_MATLAB)
+tr_num <- sum(diag(t(f) %*% Pf %*% f))
+tr_denom <- sum(diag(t(f) %*% f))
+traceR2 <- tr_num / tr_denom 
+
+# other way around?
+Pf <- f %*% solve(t(f) %*% f) %*% t(f)
+tr_num <- sum(diag(t(f_MATLAB) %*% Pf %*% f_MATLAB))
+tr_denom <- sum(diag(t(f_MATLAB) %*% f_MATLAB))
+traceR2_b <- tr_num / tr_denom 
 # tidy up factors
 fdf <- data.frame(dates = xdf$dates, f = f)
