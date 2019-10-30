@@ -61,7 +61,7 @@ f_pca <- function(x, Nf){
     return(list(lam = lam, f = f, chi = chi, eigvals = eigvals))
 }
 
-Nf <- 2 # number of factors
+Nf <- 4 # number of factors
 Niter <- 50 # maximum number of iterations
 iter <- 0
 err <- 999
@@ -102,24 +102,25 @@ while (err > 0.000001 & iter < Niter) {
 # plot factors
 plot(f[, 1], type = "l", col = "blue")
 lines(f[, 2], type = "l", col = "red")
-#lines(f[, 3], type = "l", col = "green")
-#lines(f[, 4], type = "l", col = "black")
+lines(f[, 3], type = "l", col = "green")
+lines(f[, 4], type = "l", col = "black")
 
 # compare with MATLAB factors
 f_MATLAB <- as.matrix(read.csv("original MATLAB code/FhatMATLAB.csv", header = FALSE))
 
-par(mfrow = c(2,1))
+par(mfrow = c(2,2))
+
 plot(f[, 1], type = "l", col = "blue", xlab = "", ylab = "", main = "factor 1")
 lines(f_MATLAB[, 1], type = "l", col = "red")
 
 plot(f[, 2], type = "l", col = "blue", xlab = "", ylab = "", main = "factor 2")
 lines(f_MATLAB[, 2], type = "l", col = "red")
-# 
-# plot(f[, 3], type = "l", col = "blue", xlab = "", ylab = "", main = "factor 3")
-# lines(f_MATLAB[, 3], type = "l", col = "red")
-# 
-# plot(f[, 4], type = "l", col = "blue", xlab = "", ylab = "", main = "factor 4")
-# lines(f_MATLAB[, 4], type = "l", col = "red")
+
+plot(f[, 3], type = "l", col = "blue", xlab = "", ylab = "", main = "factor 3")
+lines(f_MATLAB[, 3], type = "l", col = "red")
+
+plot(f[, 4], type = "l", col = "blue", xlab = "", ylab = "", main = "factor 4")
+lines(f_MATLAB[, 4], type = "l", col = "red")
 
 par(mfrow=c(1,1))
 

@@ -166,7 +166,7 @@ else
     icstar=8;
 end
 
-icstar = 2 ;
+icstar = 4 ;
 
 % Run principal components on updated dataset using subfunction pc2()
 %   chat   = values of x3 predicted by the factors
@@ -233,7 +233,7 @@ while err> 0.000001 && it <maxit
         icstar=8;
     end
     
-    icstar = 2 ; 
+    icstar = 4 ; 
 
     % Run principal components on the new dataset using subfunction pc2()
     %   chat   = values of x3 predicted by the factors
