@@ -7,8 +7,8 @@
 rm(list = ls())
 
 # set working directory
-#setwd("C:/Users/Philipp/Documents/GitHub/fredmdr")
-setwd("C:/Users/Hauber/Desktop/fredmdr")
+setwd("C:/Users/Philipp/Documents/GitHub/fredmdr")
+#setwd("C:/Users/Hauber/Desktop/fredmdr")
 
 # load in data
 data <- load("fredmd201909.Rda")
@@ -46,6 +46,7 @@ f_pca <- function(x, Nf){
     # singular value decomposition
     temp <- svd(t(x) %*% x)
     u <- temp[["u"]]
+    eigvals <- temp[["d"]]
     
     # loadings
     lam <- u[, 1 : Nf] * sqrt(Nn)
@@ -57,7 +58,7 @@ f_pca <- function(x, Nf){
     chi <- f %*% t(lam)
     
     # return as list
-    return(list(lam = lam, f = f, chi = chi))
+    return(list(lam = lam, f = f, chi = chi, eigvals = eigvals))
 }
 
 Nf <- 4 # number of factors
@@ -86,6 +87,7 @@ while (err > 0.000001 & iter < Niter) {
     temp <- f_pca((xmat - meanx) / sdx, Nf)
     chi <- temp[["chi"]] * sdx + meanx
     f <- temp[["f"]]
+    eigvals <- temp[["eigvals"]]
     
     # compute err
     diff_chi <- chi - chi_old
