@@ -15,7 +15,8 @@ data <- load("fredmd201909.Rda")
 
 # spread and remove date column
 library(tidyr)
-xdf <- spread(fredmd, var, value)
+#xdf <- spread(fredmd, var, value)
+xdf <- pivot_wider(fredmd, names_from = c(var), values_from = value)
 
 # convert xdf to matrix
 xmat <- as.matrix(xdf[, 2 : dim(xdf)[2]])
