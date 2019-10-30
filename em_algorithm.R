@@ -35,7 +35,7 @@ isna_xmat <- is.na(xmat)
 #======================================#
 
 # functions
-f_pca <- function(x, Nf){
+f_pca <- function(x, Nr){
     
     # check input is a matrix. If not, convert!
     if (!is.matrix(x)) {
@@ -48,7 +48,7 @@ f_pca <- function(x, Nf){
     eigvals <- temp[["d"]]
     
     # loadings
-    lam <- u[, 1 : Nf] * sqrt(Nn)
+    lam <- u[, 1 : Nr] * sqrt(Nn)
     
     # factors
     f <- x %*% lam / Nn
@@ -60,7 +60,7 @@ f_pca <- function(x, Nf){
     return(list(lam = lam, f = f, chi = chi, eigvals = eigvals))
 }
 
-Nf <- 4 # number of factors
+Nr <- 4 # number of factors
 Niter <- 50 # maximum number of iterations
 iter <- 0
 err <- 999
@@ -69,7 +69,7 @@ err <- 999
 xmat[isna_xmat] <- meanx[isna_xmat]
 
 # initial estimate of common component
-temp <- f_pca((xmat - meanx) / sdx, Nf)
+temp <- f_pca((xmat - meanx) / sdx, Nr)
 chi_old <- temp[["chi"]] * sdx + meanx
 
 # iterate!
@@ -87,7 +87,7 @@ while (err > 0.000001 & iter < Niter) {
     sdx <- matrix(apply(xmat, 2, sd, na.rm = FALSE), nrow = Nt, ncol = Nn, byrow = TRUE)
     
     # estimate factor
-    temp <- f_pca((xmat - meanx) / sdx, Nf)
+    temp <- f_pca((xmat - meanx) / sdx, Nr)
     chi <- temp[["chi"]] * sdx + meanx
     f <- temp[["f"]]
     eigvals <- temp[["eigvals"]]
