@@ -134,5 +134,6 @@ Pf <- f %*% solve(t(f) %*% f) %*% t(f)
 tr_num <- sum(diag(t(f_MATLAB) %*% Pf %*% f_MATLAB))
 tr_denom <- sum(diag(t(f_MATLAB) %*% f_MATLAB))
 traceR2_b <- tr_num / tr_denom 
+
 # tidy up factors
 fdf <- data.frame(dates = xdf$dates, f = f)
