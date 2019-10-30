@@ -121,6 +121,8 @@ lines(f_MATLAB[, 3], type = "l", col = "red")
 plot(f[, 4], type = "l", col = "blue", xlab = "", ylab = "", main = "factor 4")
 lines(f_MATLAB[, 4], type = "l", col = "red")
 
+par(mfrow=c(1,1))
+
 # trace R2
 Pf <- f_MATLAB %*% solve(t(f_MATLAB) %*% f_MATLAB) %*% t(f_MATLAB)
 tr_num <- sum(diag(t(f) %*% Pf %*% f))
