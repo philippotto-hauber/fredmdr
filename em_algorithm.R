@@ -30,7 +30,6 @@ sdx <- matrix(apply(xmat, 2, sd, na.rm = TRUE), nrow = Nt, ncol = Nn, byrow = TR
 # pattern of missings in xmat
 isna_xmat <- is.na(xmat)
 
-
 #======================================#
 # EM algorithm
 #======================================#
@@ -82,7 +81,11 @@ while (err > 0.000001 & iter < Niter) {
     
     # update missing values
     xmat[isna_xmat] <- chi_old[isna_xmat] 
-
+    
+    # recompute mean and sd
+    meanx <- matrix(apply(xmat, 2, mean, na.rm = FALSE), nrow = Nt, ncol = Nn, byrow = TRUE)
+    sdx <- matrix(apply(xmat, 2, sd, na.rm = FALSE), nrow = Nt, ncol = Nn, byrow = TRUE)
+    
     # estimate factor
     temp <- f_pca((xmat - meanx) / sdx, Nf)
     chi <- temp[["chi"]] * sdx + meanx
