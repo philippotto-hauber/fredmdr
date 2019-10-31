@@ -71,7 +71,7 @@ xmat[isna_xmat] <- meanx[isna_xmat]
 
 # initial estimate of common component
 temp <- f_pca((xmat - meanx) / sdx, Nr)
-chi_old <- temp$chi * sdx + meanx
+chi_old <- temp$chi 
 
 # iterate!
 while (err > 0.000001 & iter < Niter) {
@@ -79,9 +79,10 @@ while (err > 0.000001 & iter < Niter) {
     # update iter
     iter <- iter + 1 
     print(iter)
+    print(err)
     
     # update missing values
-    xmat[isna_xmat] <- chi_old[isna_xmat] 
+    xmat[isna_xmat] <- chi_old[isna_xmat] * sdx[isna_xmat] + meanx[isna_xmat]
     
     # recompute mean and sd
     meanx <- matrix(apply(xmat, 2, mean, na.rm = FALSE), nrow = Nt, ncol = Nn, byrow = TRUE)
@@ -89,7 +90,7 @@ while (err > 0.000001 & iter < Niter) {
     
     # estimate factor
     temp <- f_pca((xmat - meanx) / sdx, Nr)
-    chi <- temp$chi * sdx + meanx
+    chi <- temp$chi
     f <- temp$f
     eigvals <- temp$eigvals
     
@@ -98,7 +99,7 @@ while (err > 0.000001 & iter < Niter) {
     v1 <- sum(diff_chi ^ 2)
     v2 <- sum(chi_old ^ 2)
     err <- v1 / v2
-    print(err)
+
     # overwrite chi_old
     chi_old <- chi
 }
