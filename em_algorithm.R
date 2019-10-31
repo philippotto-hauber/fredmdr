@@ -71,7 +71,7 @@ xmat[isna_xmat] <- meanx[isna_xmat]
 
 # initial estimate of common component
 temp <- f_pca((xmat - meanx) / sdx, Nr)
-chi_old <- temp[["chi"]] * sdx + meanx
+chi_old <- temp$chi * sdx + meanx
 
 # iterate!
 while (err > 0.000001 & iter < Niter) {
@@ -89,9 +89,9 @@ while (err > 0.000001 & iter < Niter) {
     
     # estimate factor
     temp <- f_pca((xmat - meanx) / sdx, Nr)
-    chi <- temp[["chi"]] * sdx + meanx
-    f <- temp[["f"]]
-    eigvals <- temp[["eigvals"]]
+    chi <- temp$chi * sdx + meanx
+    f <- temp$f
+    eigvals <- temp$eigvals
     
     # compute err
     diff_chi <- chi - chi_old
