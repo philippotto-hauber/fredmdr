@@ -54,11 +54,12 @@ f_pca <- function(x, Nr){
     # factors
     f <- x %*% lam / Nn
     
-    # common component
+    # common and idiosyncratic component
     chi <- f %*% t(lam)
-    
+    e <- x - chi
+
     # return as list
-    return(list(lam = lam, f = f, chi = chi, eigvals = eigvals))
+    return(list(lam = lam, f = f, chi = chi, e = e, eigvals = eigvals))
 }
 
 Nr <- 4 # number of factors
@@ -68,6 +69,31 @@ err <- 999
 
 # fill in missings with uncondtional mean
 xmat[isna_xmat] <- meanx[isna_xmat]
+
+# determine number of factors
+ic <- "p1"
+Nr_max <- 10
+rr <- 1 : Nr_max
+crit <- log((Nt * Nn) / (Nt + Nn)) * rr * (Nt + Nn) / (Nt * Nn)
+crit <- ((Nt + Nn) / (Nt * Nn)) * log(min(Nt,Nn)) * rr
+crit <- log(min(Nt,Nn)) / min(Nt,Nn) * rr
+# 
+# # PCA
+# temp <- f_pca((xmat - meanx) / sdx, Nr_max)
+# f0 <- temp$f
+# lam0 <- temp$lam
+
+# loop over number of factors to compute idiosyncratic components
+sigma <- vector()
+for (r in 1 : Nr_max) {
+    temp <- f_pca((xmat - meanx) / sdx, r)
+    e <- temp$e 
+    sigma[r] <- sum(e ^ 2) / (Nt * Nn)
+    crit[r] <- log(sigma[r]) + crit[r] 
+}
+
+Nr <- rr[which.min(crit)]
+
 
 # initial estimate of common component
 temp <- f_pca((xmat - meanx) / sdx, Nr)
