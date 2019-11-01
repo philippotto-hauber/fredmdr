@@ -140,6 +140,7 @@ while (err > 0.000001 & iter < Niter) {
     iter <- iter + 1 
     print(iter)
     print(err)
+    print(Nr)
     
     # update missing values
     xmat[isna_xmat] <- chi_old[isna_xmat] * sdx[isna_xmat] + meanx[isna_xmat]
@@ -147,6 +148,9 @@ while (err > 0.000001 & iter < Niter) {
     # recompute mean and sd
     meanx <- matrix(apply(xmat, 2, mean, na.rm = FALSE), nrow = Nt, ncol = Nn, byrow = TRUE)
     sdx <- matrix(apply(xmat, 2, sd, na.rm = FALSE), nrow = Nt, ncol = Nn, byrow = TRUE)
+    
+    # determine number of factors
+    Nr <- f_baing((xmat - meanx) / sdx, Nr_max, ic)
     
     # estimate factor
     temp <- f_pca((xmat - meanx) / sdx, Nr)
