@@ -57,7 +57,7 @@ DEMEAN=2;
 %   1 --> information criterion PC_p1
 %   2 --> information criterion PC_p2
 %   3 --> information criterion PC_p3
-jj=2;
+jj=1;
 
 % Maximum number of factors to be estimated; if set to 99, the number of
 % factors selected is forced to equal 8
