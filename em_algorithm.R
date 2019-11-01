@@ -62,38 +62,72 @@ f_pca <- function(x, Nr){
     return(list(lam = lam, f = f, chi = chi, e = e, eigvals = eigvals))
 }
 
-Nr <- 4 # number of factors
-Niter <- 50 # maximum number of iterations
-iter <- 0
-err <- 999
-
 # fill in missings with uncondtional mean
 xmat[isna_xmat] <- meanx[isna_xmat]
 
-# determine number of factors
-ic <- "p1"
-Nr_max <- 10
-rr <- 1 : Nr_max
-crit <- log((Nt * Nn) / (Nt + Nn)) * rr * (Nt + Nn) / (Nt * Nn)
-crit <- ((Nt + Nn) / (Nt * Nn)) * log(min(Nt,Nn)) * rr
-crit <- log(min(Nt,Nn)) / min(Nt,Nn) * rr
+# function to determine number of factors
+f_baing <- function(x, Nr_max, ic){
+
+    # check information criterion 
+    if (ic == "none"){
+        Nr <- Nr_max
+        return(Nr)
+        
+    } else if (ic == "PC_p1"){
+        crit <- log((Nt * Nn) / (Nt + Nn)) * (1 : Nr_max) * (Nt + Nn) / (Nt * Nn)
+        
+    } else if (ic == "PC_p2"){
+        crit <- ((Nt + Nn) / (Nt * Nn)) * log(min(Nt,Nn)) * (1 : Nr_max)
+        
+    } else if (ic == "PC_p3"){
+        crit <- log(min(Nt,Nn)) / min(Nt,Nn) * (1 : Nr_max)
+        
+    } else {
+        print("No valid criterion selected. Nr = 0!")
+        Nr <- 0
+        return(Nr)
+    }
+    
+    # loop over number of factors to compute idiosyncratic components
+    sigma <- vector()
+    for (r in 1 : Nr_max) {
+        temp <- f_pca(x, r)
+        e <- temp$e 
+        sigma[r] <- sum(e ^ 2) / (Nt * Nn)
+        crit[r] <- log(sigma[r]) + crit[r] 
+    }
+    
+    # check model with no factors
+    crit0 <- sum( x ^ 2 ) / (Nt * Nn)
+    
+    # find number of factors for which criterion is minimized
+    Nr <- ifelse(crit0 < min(crit), 0, which.min(crit)) 
+    return(Nr)  
+}
+# 
+# # determine number of factors
+# ic <- "p1"
+# Nr_max <- 10
+# rr <- 1 : Nr_max
+# crit <- log((Nt * Nn) / (Nt + Nn)) * rr * (Nt + Nn) / (Nt * Nn)
+# crit <- ((Nt + Nn) / (Nt * Nn)) * log(min(Nt,Nn)) * rr
+# crit <- log(min(Nt,Nn)) / min(Nt,Nn) * rr
 # 
 # # PCA
 # temp <- f_pca((xmat - meanx) / sdx, Nr_max)
 # f0 <- temp$f
 # lam0 <- temp$lam
 
-# loop over number of factors to compute idiosyncratic components
-sigma <- vector()
-for (r in 1 : Nr_max) {
-    temp <- f_pca((xmat - meanx) / sdx, r)
-    e <- temp$e 
-    sigma[r] <- sum(e ^ 2) / (Nt * Nn)
-    crit[r] <- log(sigma[r]) + crit[r] 
-}
 
-Nr <- rr[which.min(crit)]
+# EM algorithm options
+Niter <- 50 # maximum number of iterations
+iter <- 0
+err <- 999
 
+# determine number of factors
+Nr_max <- 10
+ic <- "PC_p1"
+Nr <- f_baing((xmat - meanx) / sdx, Nr_max, ic)
 
 # initial estimate of common component
 temp <- f_pca((xmat - meanx) / sdx, Nr)
