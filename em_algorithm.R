@@ -13,7 +13,7 @@ setwd("C:/Users/Philipp/Documents/GitHub/fredmdr")
 # load in data
 data <- load("fredmd201909.Rda")
 
-# spread and remove date column
+# spread 
 library(tidyr)
 #xdf <- spread(fredmd, var, value)
 xdf <- pivot_wider(fredmd, names_from = c(var), values_from = value)
@@ -45,8 +45,8 @@ f_pca <- function(x, Nr){
     
     # singular value decomposition
     temp <- svd(t(x) %*% x)
-    u <- temp[["u"]]
-    eigvals <- temp[["d"]]
+    u <- temp$u
+    eigvals <- temp$d
     
     # loadings
     lam <- u[, 1 : Nr] * sqrt(Nn)
