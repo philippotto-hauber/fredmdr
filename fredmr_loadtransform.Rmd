@@ -47,19 +47,6 @@ sample_end <- "2000-01-01"
 xmat_subsample <- xmat[rownames(xmat) >= sample_start & rownames(xmat) <= sample_end, ]
 ```
 
-## Variable selection 
-
-Only keep certain or exclude some variables
-
-```{r}
-keep_vars <- c("INDPRO", "PAYEMS", "CPIAUCSL")
-library(dplyr)
-xmat_keepvars <- select(xmat, keep_vars)
-
-remove_vars <- c("AAA", "BAA")
-xmat_removevars <- select(xmat, -remove_vars)
-```
-
 ## Transform series
 
 First, define a function that transforms the series according to its code: 
@@ -117,6 +104,19 @@ Remove the first two rows which are mostly NA due to transformations
 
 ```{r}
 xmat <- xmat[3 : dim(xmat)[1], ]
+```
+
+## Variable selection 
+
+Only keep certain or exclude some variables. This is done *after* transforming the series, so `trafos` does not need to be adjusted
+
+```{r}
+library(dplyr)
+keep_vars <- c("INDPRO", "PAYEMS", "CPIAUCSL")
+xmat_keepvars <- select(xmat, keep_vars)
+
+remove_vars <- c("AAA", "BAA")
+xmat_removevars <- select(xmat, -remove_vars)
 ```
 
 ## Remove outliers

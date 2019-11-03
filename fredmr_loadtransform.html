@@ -404,24 +404,6 @@ rm(temp)</code></pre>
 sample_end &lt;- &quot;2000-01-01&quot;
 xmat_subsample &lt;- xmat[rownames(xmat) &gt;= sample_start &amp; rownames(xmat) &lt;= sample_end, ]</code></pre>
 </div>
-<div id="variable-selection" class="section level2">
-<h2>Variable selection</h2>
-<p>Only keep certain or exclude some variables</p>
-<pre class="r"><code>keep_vars &lt;- c(&quot;INDPRO&quot;, &quot;PAYEMS&quot;, &quot;CPIAUCSL&quot;)
-library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>xmat_keepvars &lt;- select(xmat, keep_vars)
-
-remove_vars &lt;- c(&quot;AAA&quot;, &quot;BAA&quot;)
-xmat_removevars &lt;- select(xmat, -remove_vars)</code></pre>
-</div>
 <div id="transform-series" class="section level2">
 <h2>Transform series</h2>
 <p>First, define a function that transforms the series according to its code:</p>
@@ -469,6 +451,24 @@ xmat_removevars &lt;- select(xmat, -remove_vars)</code></pre>
 <pre class="r"><code>xmat &lt;- f_transform(xmat, trafos)</code></pre>
 <p>Remove the first two rows which are mostly NA due to transformations</p>
 <pre class="r"><code>xmat &lt;- xmat[3 : dim(xmat)[1], ]</code></pre>
+</div>
+<div id="variable-selection" class="section level2">
+<h2>Variable selection</h2>
+<p>Only keep certain or exclude some variables. This is done <em>after</em> transforming the series, so <code>trafos</code> does not need to be adjusted</p>
+<pre class="r"><code>keep_vars &lt;- c(&quot;INDPRO&quot;, &quot;PAYEMS&quot;, &quot;CPIAUCSL&quot;)
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>xmat_keepvars &lt;- select(xmat, keep_vars)
+
+remove_vars &lt;- c(&quot;AAA&quot;, &quot;BAA&quot;)
+xmat_removevars &lt;- select(xmat, -remove_vars)</code></pre>
 </div>
 <div id="remove-outliers" class="section level2">
 <h2>Remove outliers</h2>
@@ -561,7 +561,7 @@ plot(diffRMATLAB,
 </div>
 <div id="re-insert-dates-as-column-and-tidy-up" class="section level2">
 <h2>Re-insert dates as column and tidy up</h2>
-<pre class="r"><code>xmat &lt;- cbind(rownames(xmat), data.frame(xmat, row.names=NULL))
+<pre class="r"><code>xmat &lt;- cbind(as.Date(rownames(xmat)), data.frame(xmat, row.names=NULL))
 names(xmat)[1] &lt;- &quot;dates&quot;
 library(tidyr)
 fredmd &lt;- gather(xmat, key = var, value = value, -dates)</code></pre>
