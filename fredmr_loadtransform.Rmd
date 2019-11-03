@@ -244,3 +244,20 @@ fredmd <- gather(xmat, key = var, value = value, -dates)
 save(fredmd, file = "fredmd201909.Rda")
 ```
 
+## Function that brings everything together
+
+```{r}
+f_load_fredmd <- function(vintage, dirname = NULL, alternative_trafos = NULL,
+                          sample_start = "1959-01-01", sample_end = NULL,
+                          keep_vars = NULL, remove_vars = NULL,
+                          drop_firstobs = TRUE){
+  #========================================================================#
+  #= function to read in FRED-MD data
+  #========================================================================#
+  
+    
+    
+  
+}
+```
+
