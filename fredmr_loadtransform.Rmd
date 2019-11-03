@@ -60,7 +60,6 @@ remove_vars <- c("AAA", "BAA")
 xmat_removevars <- select(xmat, -remove_vars)
 ```
 
-
 ## Transform series
 
 First, define a function that transforms the series according to its code: 
@@ -232,7 +231,7 @@ Call **f_standardize** and unlist results
 ## Re-insert dates as column and tidy up
 
 ```{r}
-xmat <- cbind(rownames(xmat), data.frame(xmat, row.names=NULL))
+xmat <- cbind(as.Date(rownames(xmat)), data.frame(xmat, row.names=NULL))
 names(xmat)[1] <- "dates"
 library(tidyr)
 fredmd <- gather(xmat, key = var, value = value, -dates)
