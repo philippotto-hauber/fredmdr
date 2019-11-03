@@ -13,7 +13,8 @@ rm(list = ls())
 
 # set working directory
 #setwd("C:/Users/Philipp/Documents/GitHub/fredmdr")
-setwd("C:/Users/Hauber/Desktop/fredmdr")
+#setwd("C:/Users/Hauber/Desktop/fredmdr")
+setwd("C:/Users/Philipp/Documents/fredmdr")
 
 # load in data
 temp <- read.csv("2019-09.csv")
@@ -41,7 +42,22 @@ Variable names are stored as column names of xmat
 ## Subsample selection
 
 ```{r}
+sample_start <- "1985-01-01"
+sample_end <- "2000-01-01"
+xmat_subsample <- xmat[rownames(xmat) >= sample_start & rownames(xmat) <= sample_end, ]
+```
 
+## Variable selection 
+
+Only keep certain or exclude some variables
+
+```{r}
+keep_vars <- c("INDPRO", "PAYEMS", "CPIAUCSL")
+library(dplyr)
+xmat_keepvars <- select(xmat, keep_vars)
+
+remove_vars <- c("AAA", "BAA")
+xmat_removevars <- select(xmat, -remove_vars)
 ```
 
 
@@ -54,6 +70,7 @@ f_transform <- function(x, trafos){
   
   # back out dimensions
   Nt <- dim(x)[1] ;  Nn <- dim(x)[2]
+  
   # check that number of columns equals length of trafos
   if (Nn != length(trafos)){
     print("dimensions of x and trafos do not match. Abort!")
