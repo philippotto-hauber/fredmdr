@@ -1,2 +1,0 @@
-Package: fredmdr
-Version: 0.1
