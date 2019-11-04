@@ -1,3 +1,23 @@
+#' f_loadfredmd
+#' 
+#' Loads, transforms and tidies up the FRED-MD data.
+#'  
+#' 
+#'@param vintage String of the form "yyyy-mm"
+#'@param dirname location of csv-file. Defaults to NULL. 
+#'@param alternative_trafos Vector containing values with which to overwrite the original transformation codes. Defaults to NULL
+#'@param sample_start String of the form "yyyy-mm-dd" containing the start date of the sample. Defaults to "1959-01-01".
+#'@param sample_start String of the form "yyyy-mm-dd" containing the end date of the sample. Defaults to NULL, i.e. all available observations.  
+#'@param keep_vars Vector of strings containing variables to keep, all others are dropped. Defaults to NULL.
+#'@param remove_vars Vector of strings containing variables to remove, all others are kept. Defaults to NULL.
+#'@param drop_firstobs Remove first two observations that contain many NA's due to transformations. Defaults to TRUE.
+#'@return Tidy dataframe
+#'
+#'@examples
+#'fredmd <- f_loadfredmd(vintage = "2019-09", keep_vars = c("INDPRO", "PAYEMS", "CPIAUCSL"))
+#'
+#'@export
+#'
 f_loadfredmd <- function(vintage, dirname = NULL, alternative_trafos = NULL, 
                          sample_start = "1959-01-01", sample_end = NULL,
                          keep_vars = NULL, remove_vars = NULL, drop_firstobs = TRUE){

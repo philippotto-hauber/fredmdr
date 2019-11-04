@@ -1,3 +1,20 @@
+#' f_pca
+#' 
+#' Performs principle components analysis on x.
+#' 
+#'@param x Nt x Nn matrix.
+#'@return List containing the first Nr principle components (f), 
+#' the associated loadings (lam), the common and idiosyncratic 
+#' components (chi and e, respectively) as well as the 
+#' eigenvalues (eigvals) of the covariance matrix of x
+#'
+#'@examples
+#'tmp <- f_pca(x, Nr = 8)
+#'f <- tmp$f # factors
+#'lam <- tmp$lam # loadings
+#'
+#'@export
+#'
 f_pca <- function(x, Nr){
     
     # check input is a matrix. If not, convert!

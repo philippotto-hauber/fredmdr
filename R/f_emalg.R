@@ -1,4 +1,22 @@
-f_emalg <- function(x, Nr_max = 10, Niter = 50, ic = "PC_p1", print_iter = FALSE){
+
+#' f_emalg
+#' 
+#' Estimates the common factors of x following an Expectation-Maximization algorithm
+#' as described in e.g. Stock and Watson (2002, JBES)#'  
+#' 
+#'@param x Nt x Nn matrix. NA are allowed
+#'@param Nr_max maximum number of factors. Defaults to 10. 
+#'@param Niter maximum number of iterations. Defaults to 50.
+#'@param ic information criterion. Defaults to "PC_p1".
+#'@param print_iter If TRUE, display the current iteration, the value of the error and the number of chosen factors. Defaults to TRUE.  
+#'@return Tidy dataframe
+#'
+#'@examples
+#'fredmd <- f_loadfredmd(vintage = "2019-09", keep_vars = c("INDPRO", "PAYEMS", "CPIAUCSL"))
+#'
+#'@export
+#'
+f_emalg <- function(x, Nr_max = 10, Niter = 50, ic = "PC_p1", print_iter = TRUE){
     
     #========================================================================#
     #= initialisation

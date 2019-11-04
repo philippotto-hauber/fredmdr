@@ -1,7 +1,28 @@
+#' f_transform
+#' 
+#' Transforms the FRED-MD series to achieve stationarity. The codes are (see McCracken and Ng 2016, Appendix):
+#' 1 = no transformation
+#' 2 = first difference
+#' 3 = second difference
+#' 4 = log
+#' 5 = first difference of logs
+#' 6 = second difference of logs
+#' 7 = first difference of percentage change
+#' 
+#'@param x Nt x Nn matrix
+#'@param trafos Vector or dataframe of transformation codes (of length Nn)
+#'@return Matrix of transformed series 
+#'
+#'@examples
+#'x_transformed <- f_transform(x, trafos)
+#'
+#'@export
+#'
 f_transform <- function(x, trafos){
     
     # back out dimensions
-    Nt <- dim(x)[1] ;  Nn <- dim(x)[2]
+    Nt <- nrow(x) 
+    Nn <- ncol(x)
     
     # check that number of columns equals length of trafos
     if (Nn != length(trafos)){

@@ -1,3 +1,20 @@
+#' f_baing
+#' 
+#' Selects the number of factors according to the information criteria 
+#' described in Bai and Ng (2002, Econometrica)
+#'  
+#' 
+#'@param x Nt x Nn matrix
+#'@param Nr_max maximum number of factors
+#'@param ic information criterion, if "none", Nr = Nr_max!
+#'  
+#'@return Number of factors selected by the chosen criterion
+#'
+#'@examples
+#'Nr <- f_baing(x, Nr_max = 10, ic = "PC_p1")
+#'
+#'@export
+#'
 f_baing <- function(x, Nr_max, ic){
     
     # dim(x)
